@@ -29,7 +29,7 @@ class Model:
         # Create a point object for each point and save to points list
         self.points = [Point(x) for x in data]
 
-        # Get three random indices to make as the k starting centroids
+        # Get three random indices to make as the k initial centroids
         random_indices = np.random.randint(0, len(data), self.k)
 
         # Create these centroids
@@ -47,26 +47,45 @@ class Model:
             centroid_index = distances.index(min(distances))
             point.assigned_centroid = self.centroids[centroid_index]
         
-        # Calculate new centroid by taking mean of points in that cluster
-        for centroid in self.centroids:
-            points = []
+        # The following loop until an iteration where no point is reassigned to a different centroid is reached
+        point_reassigned = True
+        while point_reassigned == True:
+            # Start loop with no points reassigned
+            point_reassigned = False
+            # Calculate new centroid by taking mean of points in that cluster
+            for centroid in self.centroids:
+                points = []
+                for point in self.points:
+                    if point.assigned_centroid is centroid:
+                        points.append(point.coordinates)
+                # Updating centroid coordinates
+                centroid.coordinates = np.mean(points, axis=0)
+                print('changed centroid:', centroid.coordinates)
+                
+            # Re-assign data points to the closest cluster center
             for point in self.points:
-                if point.assigned_centroid is centroid:
-                    points.append(point.coordinates)
-            # Updating centroid coordinates
-            centroid = np.mean(points, axis=0)
-            
-        # Re-assign data points to the closest cluster center
-        
+                distances = []
+                for centroid in self.centroids:
+                    dst = distance.euclidean(point.coordinates, centroid.coordinates)
+                    distances.append(dst)
 
-        # Convergence happens when points are no longer reassigned to a different cluster
-        pass
+                centroid_index = distances.index(min(distances))
+                if point.assigned_centroid is not self.centroids[centroid_index]:
+                    point.assigned_centroid = self.centroids[centroid_index]
+                    point_reassigned = True
+
         
 
     def predict(self, X):
         # Loop through the fitted centroids and the one with the least distance is the assignment
         # return/print the centroid coordinates
-        pass
+        distances = []
+        for centroid in self.centroids:
+            dst = distance.euclidean(X, centroid.coordinates)
+            distances.append(dst)
+        centroid_index = distances.index(min(distances))
+        return self.centroids[centroid_index].coordinates
+            
 
     def test_function():
         return self.centroids
@@ -76,7 +95,7 @@ class Model:
 if __name__ == '__main__':
     print('Hello world')
 
-    test_data = [[1.1, 7.8], [6, 5], [4, 2], [4, 1], [1.1, 9], [9, 7.8], [10, 7.8], [15, 7.8], [16, 3], [22, 4.2], [17, 2], [19, 9], [10, 2], [2, 4], [5, 19]]
+    test_data = [[100, 7.8], [111, 5], [90, 2], [95, 1], [120, 9], [84, 7.8], [99, 7.8], [50, 7.8], [70, 3], [40, 4.2], [30, 2], [60, 9], [66, 2], [77, 4], [170, 19]]
 
     model = Model(2)
     model.fit(test_data)
@@ -84,3 +103,5 @@ if __name__ == '__main__':
         print('POINT COORDS', point.coordinates)
         print('CENTROID COORDS', point.assigned_centroid.coordinates)
         print('--------------------')
+
+    print('Model prediction for [1000,1000]', model.predict([1000,1000]))
