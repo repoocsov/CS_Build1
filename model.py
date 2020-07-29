@@ -84,7 +84,8 @@ class Model:
             dst = distance.euclidean(X, centroid.coordinates)
             distances.append(dst)
         centroid_index = distances.index(min(distances))
-        return self.centroids[centroid_index].coordinates
+        #return self.centroids[centroid_index].coordinates
+        return centroid_index
             
 
     def test_function():
