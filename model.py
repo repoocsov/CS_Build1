@@ -1,16 +1,3 @@
-"""
-K-means clustering
-https://www.naftaliharris.com/blog/visualizing-k-means-clustering/
-https://towardsdatascience.com/k-means-clustering-algorithm-applications-evaluation-methods-and-drawbacks-aa03e644b48a
-
-DBSCAN clustering
-https://towardsdatascience.com/dbscan-clustering-explained-97556a2ad556
-
-# ONLY ALLOWED TO USE NUMPY AND SCIPY
-
-model, node, centroid
-"""
-
 import numpy as np
 from scipy.spatial import distance
 from point import Point
@@ -19,10 +6,9 @@ from centroid import Centroid
 class Model:
 
     def __init__(self, k):
-        # Number of centroids & clusters based on the k value given 
         self.k = k
         self.points = None
-        self.centroids = [] # List of centroid objects
+        self.centroids = []
 
 
     def fit(self, data):
@@ -60,7 +46,6 @@ class Model:
                         points.append(point.coordinates)
                 # Updating centroid coordinates
                 centroid.coordinates = np.mean(points, axis=0)
-                print('changed centroid:', centroid.coordinates)
                 
             # Re-assign data points to the closest cluster center
             for point in self.points:
@@ -84,8 +69,9 @@ class Model:
             dst = distance.euclidean(X, centroid.coordinates)
             distances.append(dst)
         centroid_index = distances.index(min(distances))
-        #return self.centroids[centroid_index].coordinates
-        return centroid_index
+        
+        return self.centroids[centroid_index].coordinates
+        
             
 
     def test_function():
